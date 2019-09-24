@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Map {
 
     private Scanner scanner;
-    private String[] Map = new String[20];
+    private String[] Map = new String[24];
     private Graphics g;
 
     public Map() {
@@ -19,7 +19,7 @@ public class Map {
 
     public void openFile() {
         try {
-            scanner = new Scanner(new File("assets/maps/map1.txt"));
+            scanner = new Scanner(new File("assets/maps/map2.txt"));
 //            System.out.println("opened");
         } catch (Exception e){
             System.out.println("Error Loading Map");
@@ -30,7 +30,7 @@ public class Map {
 
         while(scanner.hasNext()){
 //            System.out.println("beginning read");
-            for (int i =0; i < 15; i++){
+            for (int i =0; i < 24; i++){
                 Map[i] = scanner.next();
 //                System.out.println("\n " + (i+1) + ". " + scanner.next());
             }

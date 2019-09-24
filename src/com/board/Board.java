@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -17,6 +18,7 @@ public class Board extends JPanel implements ActionListener {
     private Player player;
     String message = "";
     private boolean win = false;
+    private int level = 1;
 
     public Board() {
         map = new Map();
@@ -29,8 +31,23 @@ public class Board extends JPanel implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (map.getMap(player.getTileX(), player.getTileY()).equals("f")) {
-            message = "winner";
-            win = true;
+            level++;
+
+            if(level == 2){
+                player.setTileX(27);
+                player.setTileY(15);
+            }
+
+            if(level == 3){
+                player.setTileX(35);
+                player.setTileY(1);
+            }
+
+            if (level > 3){
+                message = "winner";
+                win = true;
+            }
+
         }
         repaint();
     }
@@ -41,44 +58,59 @@ public class Board extends JPanel implements ActionListener {
 
         if (!win) {
 
-            for (int y = 0; y < 15; y++) {
-                for (int x = 0; x < 20; x++) {
+            for (int y = 0; y < 24; y++) {
+                for (int x = 0; x < 37; x++) {
 
                     if (map.getMap(x, y).equals("w")) {
-                        g2.setPaint(Color.RED);
-                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+//                        g2.setPaint(Color.RED);
+                        g2.setColor(new Color(15, 94, 109));
+                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
                         g2.fill(rec);
                     }
 
                     if (map.getMap(x, y).equals("p")) {
-                        g2.setPaint(Color.WHITE);
-                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+                        g2.setColor(new Color(49, 46, 52));
+                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
                         g2.fill(rec);
                     }
 
                     if (map.getMap(x, y).equals("b")) {
                         g2.setPaint(Color.BLUE);
-                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
                         g2.fill(rec);
                     }
 
                     if (map.getMap(x, y).equals("f")) {
-                        g2.setPaint(Color.GREEN);
-                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+//                        g2.setPaint(Color.GREEN);
+                        GradientPaint gp4 = new GradientPaint(25, 25,
+                                Color.blue, 25, 15, Color.black, true);
+                        g2.setPaint(gp4);
+                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
                         g2.fill(rec);
+
+                        Font f = new Font("Consolas", Font.BOLD, 12);
+                        g2.setFont(f);
+                        g2.setColor(Color.WHITE);
+                        g2.drawString("END", x * 20, y * 20.5f);
                     }
                 }
             }
 
             //Player
-            g2.setPaint(Color.BLACK);
-            Rectangle rec = new Rectangle(player.getTileX() * 32, player.getTileY() * 32, 32, 32);
-            g2.fill(rec);
+            GradientPaint gp4 = new GradientPaint(25, 25,
+                    new Color(48, 0, 109), 15, 25,
+                    new Color(109, 0, 255), true);
+            g2.setPaint(gp4);
+
+//            g2.setColor(new Color(252, 255, 242));
+//            Rectangle rec = new Rectangle(player.getTileX() * 20, player.getTileY() * 20, 20, 20);
+            Ellipse2D.Double avatar = new Ellipse2D.Double(player.getTileX() * 20, player.getTileY() * 20, 20, 20);
+            g2.fill(avatar);
 
         }
 
         //Winner
-        if (win){
+        if (win) {
             g2.drawString(message, 870, 200);
         }
 
