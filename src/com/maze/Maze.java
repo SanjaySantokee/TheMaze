@@ -8,7 +8,7 @@ public class Maze {
 
     public Maze(){
         JFrame frame = new JFrame();
-        frame.setSize(1100, 600);
+        frame.setSize(1100, 512);
         frame.setResizable(false);
         frame.setTitle("The Maze");
         frame.setLocationRelativeTo(null);
