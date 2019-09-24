@@ -15,6 +15,8 @@ public class Board extends JPanel implements ActionListener {
     private Timer timer;
     private Map map;
     private Player player;
+    String message = "";
+    private boolean win = false;
 
     public Board() {
         map = new Map();
@@ -26,6 +28,10 @@ public class Board extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        if (map.getMap(player.getTileX(), player.getTileY()).equals("f")) {
+            message = "winner";
+            win = true;
+        }
         repaint();
     }
 
@@ -33,38 +39,49 @@ public class Board extends JPanel implements ActionListener {
         super.paint(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        for (int y = 0; y < 15; y++) {
-            for (int x = 0; x < 20; x++) {
+        if (!win) {
 
-                if (map.getMap(x, y).equals("w")) {
-                    g2.setPaint(Color.RED);
-                    Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
-                    g2.fill(rec);
-                }
+            for (int y = 0; y < 15; y++) {
+                for (int x = 0; x < 20; x++) {
 
-                if (map.getMap(x, y).equals("p")) {
-                    g2.setPaint(Color.WHITE);
-                    Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
-                    g2.fill(rec);
-                }
+                    if (map.getMap(x, y).equals("w")) {
+                        g2.setPaint(Color.RED);
+                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+                        g2.fill(rec);
+                    }
 
-                if (map.getMap(x, y).equals("b")) {
-                    g2.setPaint(Color.BLUE);
-                    Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
-                    g2.fill(rec);
-                }
+                    if (map.getMap(x, y).equals("p")) {
+                        g2.setPaint(Color.WHITE);
+                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+                        g2.fill(rec);
+                    }
 
-                if (map.getMap(x, y).equals("f")) {
-                    g2.setPaint(Color.GREEN);
-                    Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
-                    g2.fill(rec);
+                    if (map.getMap(x, y).equals("b")) {
+                        g2.setPaint(Color.BLUE);
+                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+                        g2.fill(rec);
+                    }
+
+                    if (map.getMap(x, y).equals("f")) {
+                        g2.setPaint(Color.GREEN);
+                        Rectangle rec = new Rectangle(x * 32, y * 32, 32, 32);
+                        g2.fill(rec);
+                    }
                 }
             }
+
+            //Player
+            g2.setPaint(Color.BLACK);
+            Rectangle rec = new Rectangle(player.getTileX() * 32, player.getTileY() * 32, 32, 32);
+            g2.fill(rec);
+
         }
-        //Player
-        g2.setPaint(Color.BLACK);
-        Rectangle rec = new Rectangle(player.getTileX() * 32, player.getTileY() * 32, 32, 32);
-        g2.fill(rec);
+
+        //Winner
+        if (win){
+            g2.drawString(message, 870, 200);
+        }
+
 
     }
 
