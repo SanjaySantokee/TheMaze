@@ -68,26 +68,35 @@ public class Board extends JPanel implements ActionListener {
 
     }
 
-    public class Al extends KeyAdapter{
+    public class Al extends KeyAdapter {
 
         @Override
         public void keyPressed(KeyEvent e) {
             int key = e.getKeyCode();
 
-            if (key == KeyEvent.VK_LEFT) {
-                player.move(-1, 0);
-            }
-
-            if (key == KeyEvent.VK_RIGHT) {
-                player.move(1, 0);
-            }
-
             if (key == KeyEvent.VK_UP) {
-                player.move(0, -1);
+                if (!map.getMap(player.getTileX(), player.getTileY() - 1).equals("w")) {
+                    player.move(0, -1);
+                }
+
             }
 
             if (key == KeyEvent.VK_DOWN) {
-                player.move(0, 1);
+                if (!map.getMap(player.getTileX(), player.getTileY() + 1).equals("w")) {
+                    player.move(0, 1);
+                }
+            }
+
+            if (key == KeyEvent.VK_LEFT) {
+                if (!map.getMap(player.getTileX() - 1, player.getTileY()).equals("w")) {
+                    player.move(-1, 0);
+                }
+            }
+
+            if (key == KeyEvent.VK_RIGHT) {
+                if (!map.getMap(player.getTileX() + 1, player.getTileY()).equals("w")) {
+                    player.move(1, 0);
+                }
             }
         }
 
