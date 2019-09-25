@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.util.TimerTask;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -18,32 +19,69 @@ public class Board extends JPanel implements ActionListener {
     private Player player;
     String message = "";
     private boolean win = false;
+    private boolean lose = false;
     private int level = 1;
+    private int secondsLeft = 15;
+    private boolean isRunning = false;
+    private int x = 800;
+    private Thread gameThread;
+    private Graphics2D g2;
 
     public Board() {
-        map = new Map();
-        player = new Player();
+        map = new Map(this);
+        player = new Player(this);
         addKeyListener(new Al());
         setFocusable(true);
         timer = new Timer(25, this);
         timer.start();
+        startCountdown();
+
+        Graphics g = this.getGraphics();
+        g2 = (Graphics2D) g;
+
+//        startGame();
+    }
+
+    private java.util.Timer countdown = new java.util.Timer();
+    TimerTask task = new TimerTask() {
+        @Override
+        public void run() {
+            secondsLeft--;
+            if (secondsLeft < 0) {
+                lose = true;
+                stopCountDown();
+            }
+            System.out.println("Seconds Left: " + secondsLeft);
+        }
+    };
+
+    public void startCountdown() {
+        countdown.scheduleAtFixedRate(task, 2000, 1000);
+    }
+
+    public void stopCountDown() {
+        countdown.cancel();
     }
 
     public void actionPerformed(ActionEvent e) {
         if (map.getMap(player.getTileX(), player.getTileY()).equals("f")) {
             level++;
 
-            if(level == 2){
+            if (level == 2) {
                 player.setTileX(27);
                 player.setTileY(15);
+
+                secondsLeft = 25;
             }
 
-            if(level == 3){
+            if (level == 3) {
                 player.setTileX(35);
                 player.setTileY(1);
+
+                secondsLeft = 35;
             }
 
-            if (level > 3){
+            if (level > 3) {
                 message = "winner";
                 win = true;
             }
@@ -51,61 +89,33 @@ public class Board extends JPanel implements ActionListener {
         }
         repaint();
     }
+//
+//    public void paint(Graphics g){
+//        super.paint(g);
+//    }
 
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        if (!win) {
+        if (!win && !lose) {
 
-            for (int y = 0; y < 24; y++) {
-                for (int x = 0; x < 37; x++) {
+            map.paintMap(g);
 
-                    if (map.getMap(x, y).equals("w")) {
-//                        g2.setPaint(Color.RED);
-                        g2.setColor(new Color(15, 94, 109));
-                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
-                        g2.fill(rec);
-                    }
+            player.paintPlayer(g);
 
-                    if (map.getMap(x, y).equals("p")) {
-                        g2.setColor(new Color(49, 46, 52));
-                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
-                        g2.fill(rec);
-                    }
+            Font f = new Font("Consolas", Font.BOLD, 60);
+            g2.setFont(f);
+            g2.setColor(new Color(49, 46, 52));
+            g2.drawString("THE MѦZE", 780, 100);
 
-                    if (map.getMap(x, y).equals("b")) {
-                        g2.setPaint(Color.BLUE);
-                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
-                        g2.fill(rec);
-                    }
+            f = new Font("Calibri", Font.BOLD, 40);
+            g2.setFont(f);
+            g2.drawString("LEVEL " + level, 850, 200);
 
-                    if (map.getMap(x, y).equals("f")) {
-//                        g2.setPaint(Color.GREEN);
-                        GradientPaint gp4 = new GradientPaint(25, 25,
-                                Color.blue, 25, 15, Color.black, true);
-                        g2.setPaint(gp4);
-                        Rectangle rec = new Rectangle(x * 20, y * 20, 20, 20);
-                        g2.fill(rec);
-
-                        Font f = new Font("Consolas", Font.BOLD, 12);
-                        g2.setFont(f);
-                        g2.setColor(Color.WHITE);
-                        g2.drawString("END", x * 20, y * 20.5f);
-                    }
-                }
-            }
-
-            //Player
-            GradientPaint gp4 = new GradientPaint(25, 25,
-                    new Color(48, 0, 109), 15, 25,
-                    new Color(109, 0, 255), true);
-            g2.setPaint(gp4);
-
-//            g2.setColor(new Color(252, 255, 242));
-//            Rectangle rec = new Rectangle(player.getTileX() * 20, player.getTileY() * 20, 20, 20);
-            Ellipse2D.Double avatar = new Ellipse2D.Double(player.getTileX() * 20, player.getTileY() * 20, 20, 20);
-            g2.fill(avatar);
+            f = new Font("Calibri", Font.BOLD, 30);
+            g2.setFont(f);
+            g2.drawString("Time Left:  00:00:" + secondsLeft, 800, 300);
 
         }
 
@@ -114,8 +124,53 @@ public class Board extends JPanel implements ActionListener {
             g2.drawString(message, 870, 200);
         }
 
+        if (lose) {
+            g2.drawString("You Lose", 870, 200);
+        }
+
 
     }
+
+//    public void run() {
+//        try {
+//            isRunning = true;
+//            while (isRunning) {
+//                gameUpdate();
+//                gameRender();
+//                Thread.sleep(100);    // increase value of sleep time to slow down ball
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void gameUpdate() {
+//        if (!isVisible ()) return;
+//        erase();
+//        this.x += 20;
+//    }
+//
+//    public void gameRender() {
+//        player.paintPlayer();
+////        g2.setColor(Color.black);
+////        Ellipse2D.Double circle = new Ellipse2D.Double(this.x, 20, 150, 150);
+////        g2.draw(circle);
+//    }
+//
+//    public void erase() {
+//        player.erase();
+////        g2.setColor(Color.white);
+////        g2.fill(new Ellipse2D.Double(this.x, 20, 150, 150));
+//    }
+//
+//    public void startGame() {                // initialise and start the game thread
+//
+//        if (gameThread == null) {
+//            isRunning = true;
+//            gameThread = new Thread(this);
+//            gameThread.start();
+//        }
+//    }
 
     public class Al extends KeyAdapter {
 
